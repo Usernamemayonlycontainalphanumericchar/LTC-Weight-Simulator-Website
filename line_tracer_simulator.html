@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Line Tracer Simulator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <link rel="stylesheet" href="line_tracer_simulator.css">
+</head>
+<body>
+  <h1>Line Tracer // Sensor Weight Simulator</h1>
+  <div style="display: flex; gap: 20px;">
+    <div class="grid">
+      <!-- Sensor Parameter -->
+       <div class="card full">
+        <div class="card-title">Sensor Parameter</div>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+          <div class="sensor-parameter">
+            <label>Number of Sensors</label>
+            <input class="sensor-parameter-input" id="numberofsensor" type="text">
+          </div>
+          <div class="sensor-parameter">
+            <label>Sensor Space</label>
+            <div>
+              <input class="sensor-parameter-input" id="distancebetweensensor" type="text">
+              <span>mm</span>
+            </div>
+          </div>
+          <div class="sensor-parameter">
+            <label>Sensor Size</label>
+            <div>
+              <input class="sensor-parameter-input" id="sensorsize" type="text">
+              <span>mm</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-title">Line Parameter</div>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+          <div class="sensor-parameter">
+            <label>line width</label>
+            <div>
+              <input class="sensor-parameter-input" id="linewidth" type="text">
+              <span>mm</span>
+            </div>
+          </div>
+          <div class="sensor-parameter">
+            <label>line gradient distance</label>
+            <div>
+              <input class="sensor-parameter-input" id="linegradient" type="text">
+              <span>mm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Line Distribution-->
+      <div class="card full">
+        <div class="line-title">Line Simulation</div>
+        <div class="Line-slider" style="position: relative; width: 100%; height: 20px;">
+          <input type="range" min="-100" max="100" value="0" step="1" class="LinePosition" id="LineSlider" style="position: absolute; z-index: 1; width: 100%;">
+        </div>
+      </div>
+
+      <!-- Sensor toggle -->
+      <div class="card full">
+        <div class="card-title">Sensors Data / Visualization</div>
+        <div class="sensor-row" id="sensorRow"></div>
+        <!-- Weight editor -->
+        <div class="card-title">Edit sensor weights</div>
+        <div class="weight-editor" id="weightEditor"></div>
+        <div class="weight-input-col" style="flex-direction: column; align-items: center;">
+          <label style="font-size: 0.7rem;">Weight Multiplier</label>
+          <input class="sensor-parameter-input" id="weight-multiplier-input" type="number">
+        </div>
+      </div>
+
+      <!-- Motor / Driver Settings -->
+      <div class="card">
+        <div class="card-title">Motor / Driver Settings</div>
+        <div class="slider-row">
+          <label>Motor Max Speed</label>
+          <input type="text" id="MaxSpeed">
+          <span>RPM</span>
+        </div>
+        <div class="slider-row">
+          <label>PWM Max Modulation</label>
+          <input type="text" id="PWMMaxModulation">
+        </div>
+        <div class="slider-row">
+          <label>Base speed</label>
+          <input type="range" min="0" max="100" value="50" step="1" id="baseSpeed">
+          <span id="baseSpeedVal">100</span>
+        </div>
+        <div class="slider-row">
+          <label>Branch bias</label>
+          <input type="range" min="-100" max="100" value="0" step="1" id="branchBias">
+          <span id="branchBiasVal">0</span>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="card">
+        <div class="card-title">Output</div>
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-label">Error</div>
+            <div class="metric-val" id="metricError">0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Active</div>
+            <div class="metric-val" id="metricActive">0</div>
+          </div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-label">Error + Bias</div>
+            <div class="metric-val" id="metricBiasError">0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card full">
+        <div class="card-title">Sensor weight distribution</div>
+        <div style="display: flex;">
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div class="motor-name">Left</div>
+            <div class="motor-bar-bg">
+              <div class="motor-bar" id="leftBar" style="height:0%; background:#185FA5;"></div>
+            </div>
+            <div class="motor-val" id="leftVal">—</div>
+            <div class="motor-val" id="speedLeft">—</div>
+          </div>
+          <div style="flex: 9; border: 1px solid black"></div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div class="motor-name">Right</div>
+            <div class="motor-bar-bg">
+              <div class="motor-bar" id="rightBar" style="bottom: 0; height:0%; background:#0F6E56;"></div>
+            </div>
+            <div class="motor-val" id="rightVal">—</div>
+            <div class="motor-val" id="speedRight">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="explanation" style="position: absolute; width: 500px; overflow: hidden;">
+      <button style="position: absolute; z-index: 3; font-size: 30px;" onclick="helpopener()">Help</button>
+      <div class="explanation-help" id="helper">
+        <div style="text-align: center; font-size: large;">PENGGUNAAN SIMULASI</div>
+        <div>Simulasi ini diperuntukkan untuk Robot Line Tracer menggunakan sistem berat pada pemrosesan sensornya</div>
+        <p style="text-align: center; font-size: 150%;">\(error = \frac{\sum_{n}^{a}(sensor(n)(weight(n)))}{\sum_{n}^{a}sensor(n)}\)</p>
+        <p>\(Number of Sensor\) mengatur banyaknya sensor yang digunakan</p>
+        <p>\(Distance Between Sensor\) mengatur jarak antar sensor</p>
+        <p>\(sensor size\) mengatur bukaan sensor</p>
+        <p>\(line width\) mengatur lebar garis lintasan</p>
+        <p>\(line gradient distance\) mengatur ukuran gradien pada tepi garis</p>
+        <p>Untuk simulasi pembacaan garis pada sensor menggunakan</p>
+        <p style="text-align: center; font-size: 150%;">\(S_i=\frac{1}{N}\sum_{x=x_{i}^{-}}^{x_{i}^{+}}f(x)\)</p>
+        <p>dimana</p>
+        <p style="text-align: center; font-size: 150%;">\(f(x)=\left\{\begin{matrix}\left\lfloor \mathcal{U}(0,100)\right\rfloor & \text{if } x_{neg} &lt; x &lt; x_{pos} \\ 4096 & \text{otherwise}\end{matrix}\right.\)</p>
+        <div>Menentukan Modulasi pada tiap motor menggunakan</div>
+        <p style="text-align: center; font-size: 150%;">\(PWM_{modulation(n)} = \frac{Speed_{n}}{Speed_{max}}(PWM_{max})\)</p>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>Made By : Nanda Ridho Nur Muhammad 1 June 2026</p>
+  </footer>
+  <script src="line_tracer_simulator.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+</body>
+</html>
