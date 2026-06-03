@@ -60,13 +60,14 @@ Where $L$ is the wheelbase (distance between left and right wheels).
 - Line position and width control via slider
 - Motor PWM bar visualisation
 - Turning radius computation from differential wheel speeds
-- Mathematical formula display (rendered via MathJax)
+- Realtime calculation proccess
 
 ---
 
 ## Usage
 
-Open `index.html` in a browser — no build step or server required.
+1. Download all of the file in to one single folder
+2. Open `line_tracer_simulator.html` in a browser — no build step or server required.
 
 ### Controls
 
@@ -87,9 +88,9 @@ Open `index.html` in a browser — no build step or server required.
 
 ```
 /
-├── index.html        # Main entry point
-├── style.css         # Styling and layout
-└── script.js         # Simulation logic
+├── line_tracer_simulator.html        # Main entry point
+├── line_tracer_simulator.css         # Styling and layout
+└── line_tracer_simulator.js          # Simulation logic
 ```
 
 ---
